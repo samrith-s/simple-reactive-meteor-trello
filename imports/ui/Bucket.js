@@ -110,6 +110,17 @@ class Bucket extends Component {
         this.cardHolder = ref;
     };
 
+    deleteBucket = () => {
+        const { _id, title } = this.props;
+        if (
+            confirm(
+                `Are you sure you want to delete the "${title}" bucket? All cards associated will be lost!`
+            )
+        ) {
+            Meteor.call('deleteBucketAndAllCards', _id);
+        }
+    };
+
     renderCards = () => {
         const { cards } = this.props;
 
@@ -160,6 +171,10 @@ class Bucket extends Component {
                                         autoFocus
                                     />
                                 )}
+                                <i
+                                    className="fa fa-times"
+                                    onClick={this.deleteBucket}
+                                />
                             </header>
                             <div
                                 className="bucket-cards"
