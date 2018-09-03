@@ -29,11 +29,15 @@ class App extends Component {
         ));
     };
 
-    onDragEnd = args => {
-        Meteor.call('updateMultipleCards', args);
+    onDragEnd = ({ draggableId: cardId, source, destination, reason }) => {
+        if (reason === 'DROP') {
+            Meteor.call('updateMultipleCards', cardId, source, destination);
+        }
     };
 
     render() {
+        const { isLoading } = this.props;
+
         return (
             <DragDropContext onDragEnd={this.onDragEnd}>
                 <div className="app-container">
@@ -45,15 +49,22 @@ class App extends Component {
                             />{' '}
                             Simple Reactive Meteor Trello
                         </h1>
-                        <button
-                            className="btn btn-info"
-                            onClick={this.addBucket}
-                        >
-                            <i className="fa fa-plus" /> Add Bucket
-                        </button>
+                        {!isLoading && (
+                            <button
+                                className="btn btn-info"
+                                onClick={this.addBucket}
+                            >
+                                <i className="fa fa-plus" /> Add Bucket
+                            </button>
+                        )}
                     </header>
                     <div className="bucket-container">
-                        {this.renderBuckets()}
+                        {!isLoading && this.renderBuckets()}
+                        {isLoading && (
+                            <div className="buckets-loading">
+                                <i className="fa fa-circle-o-notch fa-spin" />
+                            </div>
+                        )}
                     </div>
                 </div>
             </DragDropContext>
@@ -61,6 +72,10 @@ class App extends Component {
     }
 }
 
-export default withTracker(() => ({
-    buckets: Buckets.find({}, { sort: { seq: -1 } }).fetch()
-}))(App);
+export default withTracker(() => {
+    const handle = Meteor.subscribe('buckets');
+    return {
+        buckets: Buckets.find({}, { sort: { seq: -1 } }).fetch(),
+        isLoading: !handle.ready()
+    };
+})(App);
