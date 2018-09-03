@@ -1,90 +1,47 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 
-import Task from './Task.js';
+import Bucket from './Bucket.js';
 
-import { Tasks } from '../api/tasks.js';
+import { Buckets } from '../api';
 
-// App component - represents the whole app
 class App extends Component {
-    state = {
-        hideCompleted: false
+    addBucket = () => {
+        const { buckets } = this.props;
+
+        Buckets.insert({
+            title: `Untitled ${buckets.length + 1}`,
+            createdAt: Date.now()
+        });
     };
 
-    getTasks() {
-        return [
-            { _id: 1, text: 'This is task 1' },
-            { _id: 2, text: 'This is task 2' },
-            { _id: 3, text: 'This is task 3' }
-        ];
-    }
+    renderBuckets = () => {
+        const { buckets } = this.props;
 
-    renderTasks() {
-        let filteredTasks = this.props.tasks;
-        if (this.state.hideCompleted) {
-            filteredTasks = filteredTasks.filter(task => !task.checked);
+        if (!buckets.length) {
+            return <div className="no-buckets">No buckets to show!</div>;
         }
 
-        return filteredTasks.map(task => <Task key={task._id} task={task} />);
-    }
-
-    handleSubmit = event => {
-        event.preventDefault();
-
-        // Find the text field via the React ref
-        const text = this.input.value.trim();
-
-        Tasks.insert({
-            text,
-            createdAt: new Date() // current time
-        });
-
-        // Clear form
-        this.input.value = '';
-    };
-
-    toggleHideCompleted = () => {
-        this.setState({
-            hideCompleted: !this.state.hideCompleted
-        });
-    };
-
-    handleInputRef = ref => {
-        this.input = ref;
+        return this.props.buckets.map(bucket => (
+            <Bucket {...bucket} key={bucket._id} />
+        ));
     };
 
     render() {
         return (
-            <div className="container">
-                <header>
-                    <h1>Todo List ({this.props.incompleteCount})</h1>
-
-                    <label className="hide-completed">
-                        <input
-                            type="checkbox"
-                            readOnly
-                            checked={this.state.hideCompleted}
-                            onClick={this.toggleHideCompleted}
-                        />
-                        Hide Completed Tasks
-                    </label>
-
-                    <form className="new-task" onSubmit={this.handleSubmit}>
-                        <input
-                            type="text"
-                            ref={this.handleInputRef}
-                            placeholder="Type to add new tasks"
-                        />
-                    </form>
+            <div className="app-container">
+                <header className="app-header">
+                    <h1>Simple Reactive Meteor Trello</h1>
+                    <button className="btn btn-info" onClick={this.addBucket}>
+                        <i className="fa fa-plus" /> Add Bucket
+                    </button>
                 </header>
-
-                <ul>{this.renderTasks()}</ul>
+                <div className="bucket-container">{this.renderBuckets()}</div>
             </div>
         );
     }
 }
 
 export default withTracker(() => ({
-    tasks: Tasks.find({}, { sort: { createdAt: -1 } }).fetch(),
-    incompleteCount: Tasks.find({ checked: { $ne: true } }).count()
+    buckets: Buckets.find({}, { sort: { seq: -1 } }).fetch()
 }))(App);
