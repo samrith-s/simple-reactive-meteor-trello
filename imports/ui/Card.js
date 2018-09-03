@@ -48,6 +48,11 @@ export default class Card extends PureComponent {
         this.input = ref;
     };
 
+    handleCardDelete = () => {
+        const { _id } = this.props;
+        Cards.remove({ _id });
+    };
+
     render() {
         const { body, createdAt, provided } = this.props;
         const { editing } = this.state;
@@ -74,6 +79,10 @@ export default class Card extends PureComponent {
                 </div>
                 <div className="card-created">
                     {RelativeDate(createdAt).text}
+                    <i
+                        className="fa fa-trash"
+                        onClick={this.handleCardDelete}
+                    />
                 </div>
             </div>
         );
