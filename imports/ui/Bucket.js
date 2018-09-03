@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import Textarea from 'react-autosize-textarea';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
 
 import Card from './Card';
 
@@ -14,13 +15,14 @@ class Bucket extends Component {
     };
 
     addCard = () => {
-        const { _id } = this.props;
+        const { _id, cards } = this.props;
         const body = this.input.value;
 
         Cards.insert({
             body,
             createdAt: Date.now(),
-            bucketId: _id
+            bucketId: _id,
+            seq: cards.length
         });
 
         this.toggleCardAdd(false)();
@@ -69,61 +71,71 @@ class Bucket extends Component {
             );
         }
 
-        return cards.map(card => <Card {...card} key={card._id} />);
+        return cards.map((card, index) => (
+            <Draggable draggableId={card._id} index={index} key={card._id}>
+                {provided => <Card provided={provided} {...card} />}
+            </Draggable>
+        ));
     };
 
     render() {
-        const { title } = this.props;
+        const { title, _id } = this.props;
         const { cardAdd } = this.state;
 
         return (
-            <div className="bucket">
-                <div className="bucket-inner">
-                    <header>
-                        <strong>{title}</strong>
-                    </header>
+            <Droppable droppableId={_id}>
+                {provided => (
                     <div
-                        className="bucket-cards"
-                        ref={this.handleCardHolderRef}
+                        className="bucket"
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
                     >
-                        {this.renderCards()}
-                    </div>
-                    <footer>
-                        {!cardAdd && (
-                            <button
-                                className="bucket-add-card-btn btn btn-light"
-                                onClick={this.toggleCardAdd(true)}
+                        <div className="bucket-inner">
+                            <header>
+                                <strong>{title}</strong>
+                            </header>
+                            <div
+                                className="bucket-cards"
+                                ref={this.handleCardHolderRef}
                             >
-                                <i className="fa fa-plus" /> Add Card
-                            </button>
-                        )}
-                        {cardAdd && (
-                            <div className="bucket-input">
-                                <Textarea
-                                    placeholder="Enter card details.."
-                                    onKeyDown={this.handleKeyDown}
-                                    onKeyUp={this.handleKeyUp}
-                                    innerRef={this.handleInputRef}
-                                    autoFocus
-                                />
-                                <button
-                                    className="btn btn-success"
-                                    onClick={this.addCard}
-                                >
-                                    <i className="fa fa-check" /> Save
-                                </button>
+                                {this.renderCards()}
+                                {provided.placeholder}
                             </div>
-                        )}
-                    </footer>
-                </div>
-            </div>
+                            <footer>
+                                {!cardAdd && (
+                                    <button
+                                        className="bucket-add-card-btn btn btn-light"
+                                        onClick={this.toggleCardAdd(true)}
+                                    >
+                                        <i className="fa fa-plus" /> Add Card
+                                    </button>
+                                )}
+                                {cardAdd && (
+                                    <div className="bucket-input">
+                                        <Textarea
+                                            placeholder="Enter card details.."
+                                            onKeyDown={this.handleKeyDown}
+                                            onKeyUp={this.handleKeyUp}
+                                            innerRef={this.handleInputRef}
+                                            autoFocus
+                                        />
+                                        <button
+                                            className="btn btn-success"
+                                            onClick={this.addCard}
+                                        >
+                                            <i className="fa fa-check" /> Save
+                                        </button>
+                                    </div>
+                                )}
+                            </footer>
+                        </div>
+                    </div>
+                )}
+            </Droppable>
         );
     }
 }
 
 export default withTracker(props => ({
-    cards: Cards.find(
-        { bucketId: props._id },
-        { sort: { createdAt: 1 } }
-    ).fetch()
+    cards: Cards.find({ bucketId: props._id }, { sort: { seq: 1 } }).fetch()
 }))(Bucket);

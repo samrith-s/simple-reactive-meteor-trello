@@ -1,5 +1,7 @@
+import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
+import { DragDropContext } from 'react-beautiful-dnd';
 
 import Bucket from './Bucket.js';
 
@@ -27,17 +29,28 @@ class App extends Component {
         ));
     };
 
+    onDragEnd = args => {
+        Meteor.call('updateMultipleCards', args);
+    };
+
     render() {
         return (
-            <div className="app-container">
-                <header className="app-header">
-                    <h1>Simple Reactive Meteor Trello</h1>
-                    <button className="btn btn-info" onClick={this.addBucket}>
-                        <i className="fa fa-plus" /> Add Bucket
-                    </button>
-                </header>
-                <div className="bucket-container">{this.renderBuckets()}</div>
-            </div>
+            <DragDropContext onDragEnd={this.onDragEnd}>
+                <div className="app-container">
+                    <header className="app-header">
+                        <h1>Simple Reactive Meteor Trello</h1>
+                        <button
+                            className="btn btn-info"
+                            onClick={this.addBucket}
+                        >
+                            <i className="fa fa-plus" /> Add Bucket
+                        </button>
+                    </header>
+                    <div className="bucket-container">
+                        {this.renderBuckets()}
+                    </div>
+                </div>
+            </DragDropContext>
         );
     }
 }
