@@ -29,4 +29,15 @@
     font-size: 0.75em;
     text-align: right;
     color: rgba(1, 1, 1, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-created .fa {
+    cursor: pointer;
+}
+
+.card-created .fa:hover {
+    color: #333;
 }
