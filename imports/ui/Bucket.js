@@ -142,7 +142,7 @@ class Bucket extends Component {
     };
 
     render() {
-        const { title, _id } = this.props;
+        const { title, _id, isLoading } = this.props;
         const { cardAdd, titleEdit } = this.state;
 
         return (
@@ -177,13 +177,15 @@ class Bucket extends Component {
                                     onClick={this.deleteBucket}
                                 />
                             </header>
-                            <div
-                                className="bucket-cards"
-                                ref={this.handleCardHolderRef}
-                            >
-                                {this.renderCards()}
-                                {provided.placeholder}
-                            </div>
+                            {!isLoading && (
+                                <div
+                                    className="bucket-cards"
+                                    ref={this.handleCardHolderRef}
+                                >
+                                    {this.renderCards()}
+                                    {provided.placeholder}
+                                </div>
+                            )}
                             <footer>
                                 {!cardAdd && (
                                     <button
