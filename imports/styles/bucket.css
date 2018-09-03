@@ -19,6 +19,23 @@
     white-space: initial;
 }
 
+.bucket header textarea {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    outline: 0;
+    padding: 5px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.bucket .no-cards {
+    width: 100%;
+    padding: 20px 10px;
+    text-align: center;
+    color: rgba(1, 1, 1, 0.25);
+}
+
 .bucket-inner {
     height: max-content;
     max-height: 100%;

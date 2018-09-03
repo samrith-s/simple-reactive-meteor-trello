@@ -30,6 +30,9 @@ h3 {
     padding: 10px;
 }
 
+.no-buckets {
+}
+
 header {
     flex-shrink: 0;
 }

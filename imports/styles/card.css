@@ -14,7 +14,19 @@
     margin: 0 0 5px;
 }
 
+.card-data textarea {
+    resize: none;
+    border: 0;
+    outline: 0;
+    width: 100%;
+    border-radius: 5px;
+    padding: 5px;
+    background: #fefefe;
+    border: 1px solid rgba(1, 1, 1, 0.1);
+}
+
 .card-created {
     font-size: 0.75em;
     text-align: right;
+    color: rgba(1, 1, 1, 0.25);
 }
