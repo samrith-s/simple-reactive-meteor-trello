@@ -6,6 +6,10 @@
     padding: 10px;
 }
 
+.card:first-child {
+    margin: 10px 0;
+}
+
 .card-data {
     margin: 0 0 5px;
 }
