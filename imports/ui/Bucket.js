@@ -20,11 +20,12 @@ class Bucket extends Component {
         const body = this.input.value.trim();
 
         if (body) {
+            const cardLen = cards.length;
             Cards.insert({
                 body,
                 createdAt: Date.now(),
                 bucketId: _id,
-                seq: cards.length
+                seq: cardLen ? cards[cardLen - 1].seq + 1 : cardLen
             });
 
             this.toggleCardAdd(false)();
@@ -218,6 +219,13 @@ class Bucket extends Component {
     }
 }
 
-export default withTracker(props => ({
-    cards: Cards.find({ bucketId: props._id }, { sort: { seq: 1 } }).fetch()
-}))(Bucket);
+export default withTracker(props => {
+    const handle = Meteor.subscribe('cards', props._id);
+    return {
+        cards: Cards.find(
+            { bucketId: props._id },
+            { sort: { seq: 1 } }
+        ).fetch(),
+        isLoading: !handle.ready()
+    };
+})(Bucket);
