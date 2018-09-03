@@ -23,6 +23,19 @@ h3 {
     overflow: hidden;
 }
 
+.fa-github {
+    color: purple;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    text-decoration: none;
+}
+
+.fa-github:hover {
+    transform: scale(1.2);
+    color: green;
+    text-decoration: none;
+}
+
 .app-header {
     display: flex;
     align-items: center;

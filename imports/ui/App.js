@@ -38,7 +38,13 @@ class App extends Component {
             <DragDropContext onDragEnd={this.onDragEnd}>
                 <div className="app-container">
                     <header className="app-header">
-                        <h1>Simple Reactive Meteor Trello</h1>
+                        <h1>
+                            <a
+                                href="https://github.com/samrith-s/simple-reactive-meteor-trello"
+                                className="fa fa-github"
+                            />{' '}
+                            Simple Reactive Meteor Trello
+                        </h1>
                         <button
                             className="btn btn-info"
                             onClick={this.addBucket}
