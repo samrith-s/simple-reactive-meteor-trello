@@ -5,28 +5,49 @@ import { Draggable, Droppable } from 'react-beautiful-dnd';
 
 import Card from './Card';
 
-import { Cards } from '../api';
+import { Cards, Buckets } from '../api';
 
 import '../styles/bucket.css';
 
 class Bucket extends Component {
     state = {
-        cardAdd: false
+        cardAdd: false,
+        titleEdit: false
     };
 
     addCard = () => {
         const { _id, cards } = this.props;
-        const body = this.input.value;
+        const body = this.input.value.trim();
 
-        Cards.insert({
-            body,
-            createdAt: Date.now(),
-            bucketId: _id,
-            seq: cards.length
-        });
+        if (body) {
+            Cards.insert({
+                body,
+                createdAt: Date.now(),
+                bucketId: _id,
+                seq: cards.length
+            });
 
-        this.toggleCardAdd(false)();
-        this.cardHolder.scrollTop = this.cardHolder.scrollHeight;
+            this.toggleCardAdd(false)();
+            this.cardHolder.scrollTop = this.cardHolder.scrollHeight;
+        }
+    };
+
+    editTitle = () => {
+        const { _id } = this.props;
+        const body = this.titleInput.value.trim();
+
+        if (body) {
+            Buckets.update(
+                { _id },
+                {
+                    $set: {
+                        title: body
+                    }
+                }
+            );
+
+            this.toggleTitleEdit(false)();
+        }
     };
 
     toggleCardAdd = cardAdd => () => {
@@ -35,13 +56,29 @@ class Bucket extends Component {
         }));
     };
 
+    toggleTitleEdit = titleEdit => () => {
+        this.setState(
+            () => ({
+                titleEdit
+            }),
+            () => {
+                if (this.state.titleEdit) {
+                    this.titleInput.setSelectionRange(
+                        0,
+                        this.titleInput.value.length
+                    );
+                }
+            }
+        );
+    };
+
     handleKeyDown = e => {
         if (e.key === 'Enter') {
             e.preventDefault();
         }
     };
 
-    handleKeyUp = e => {
+    handleAddCardKeyUp = e => {
         if (e.key === 'Escape') {
             this.toggleCardAdd(false)();
         }
@@ -51,8 +88,22 @@ class Bucket extends Component {
         }
     };
 
+    handleEditTitleKeyUp = e => {
+        if (e.key === 'Escape') {
+            this.toggleTitleEdit(false)();
+        }
+
+        if (e.key === 'Enter') {
+            this.editTitle();
+        }
+    };
+
     handleInputRef = ref => {
         this.input = ref;
+    };
+
+    handleTitleInputRef = ref => {
+        this.titleInput = ref;
     };
 
     handleCardHolderRef = ref => {
@@ -80,7 +131,7 @@ class Bucket extends Component {
 
     render() {
         const { title, _id } = this.props;
-        const { cardAdd } = this.state;
+        const { cardAdd, titleEdit } = this.state;
 
         return (
             <Droppable droppableId={_id}>
@@ -92,7 +143,23 @@ class Bucket extends Component {
                     >
                         <div className="bucket-inner">
                             <header>
-                                <strong>{title}</strong>
+                                {!titleEdit && (
+                                    <strong
+                                        onClick={this.toggleTitleEdit(true)}
+                                    >
+                                        {title}
+                                    </strong>
+                                )}
+                                {titleEdit && (
+                                    <Textarea
+                                        placeholder="Bucket title.."
+                                        onKeyDown={this.handleKeyDown}
+                                        innerRef={this.handleTitleInputRef}
+                                        onKeyUp={this.handleEditTitleKeyUp}
+                                        defaultValue={title}
+                                        autoFocus
+                                    />
+                                )}
                             </header>
                             <div
                                 className="bucket-cards"
@@ -115,7 +182,7 @@ class Bucket extends Component {
                                         <Textarea
                                             placeholder="Enter card details.."
                                             onKeyDown={this.handleKeyDown}
-                                            onKeyUp={this.handleKeyUp}
+                                            onKeyUp={this.handleAddCardKeyUp}
                                             innerRef={this.handleInputRef}
                                             autoFocus
                                         />
