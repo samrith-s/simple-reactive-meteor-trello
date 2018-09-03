@@ -30,6 +30,6 @@ Meteor.methods({
 
     deleteBucketAndAllCards(bucketId) {
         Buckets.remove({ _id: bucketId });
-        Cards.remove({ bucketId }, {});
+        Cards.remove({ bucketId });
     }
 });
