@@ -31,6 +31,12 @@ h3 {
 }
 
 .no-buckets {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bolder;
+    color: rgba(1, 1, 1, 0.25);
 }
 
 header {
