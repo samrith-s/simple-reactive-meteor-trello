@@ -75,7 +75,7 @@ class App extends Component {
 export default withTracker(() => {
     const handle = Meteor.subscribe('buckets');
     return {
-        buckets: Buckets.find({}, { sort: { seq: -1 } }).fetch(),
+        buckets: Buckets.find({}, { sort: { createdAt: 1 } }).fetch(),
         isLoading: !handle.ready()
     };
 })(App);
